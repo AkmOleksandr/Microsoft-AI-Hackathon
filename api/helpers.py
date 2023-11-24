@@ -1,3 +1,24 @@
+import time
+import uuid
+import fitz
+from dotenv import load_dotenv
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.textanalytics import TextAnalyticsClient
+from msrest.authentication import CognitiveServicesCredentials
+from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
+from azure.storage.blob import BlobServiceClient, ContentSettings
+
+load_dotenv()
+
+LANG_KEY = os.getenv('LANGUAGE_KEY')
+LANG_ENDPOINT = os.getenv('LANGUAGE_ENDPOINT')
+AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+STORAGE_URL = os.getenv('STORAGE_URL')
+# IMAGE -> TEXT
+CV_ENDPOINT = os.getenv('ENDPOINT')
+CV_KEY = os.getenv('API_KEY')
+
 def authenticate_client():
     ta_credential = AzureKeyCredential(LANG_KEY)
     text_analytics_client = TextAnalyticsClient(
@@ -27,6 +48,7 @@ def _pdf_to_images(pdf_path, output_folder):
 
     return images
 
+
 def upload_images_to_blob(images, container_name):
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
     container_client = blob_service_client.get_container_client(container_name)
@@ -51,7 +73,6 @@ def upload_images_to_blob(images, container_name):
                 print(f"Error: Unable to access the URL for {blob_name}")
 
     return image_urls
-
 
 def validate_blob_url(blob_url):
     # Check if the URL is a valid Azure Storage Blob URL

@@ -1,29 +1,16 @@
 from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
-from azure.ai.textanalytics import TextAnalyticsClient
-from azure.core.credentials import AzureKeyCredential
 from azure.ai.textanalytics import ExtractiveSummaryAction
-from helpers import _pdf_to_images
-from transformers import AutoTokenizer, AutoModel
-import time
-from msrest.authentication import CognitiveServicesCredentials
-from azure.cognitiveservices.vision.computervision import ComputerVisionClient
-from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
-import uuid
-from azure.storage.blob import BlobServiceClient, ContentSettings
-import fitz
-import openai 
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from helpers import _pdf_to_images, _text_from_img
 from helpers import *
+from transformers import AutoTokenizer
+import openai
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 app = Flask(__name__)
 
 load_dotenv()
-
-# ALL CONTENT -> SUMMARY
-LANG_KEY = os.getenv('LANGUAGE_KEY')
-LANG_ENDPOINT = os.getenv('LANGUAGE_ENDPOINT')
 
 tokenizer = AutoTokenizer.from_pretrained("czearing/article-title-generator")
 model = AutoModelForSeq2SeqLM.from_pretrained("czearing/article-title-generator")
@@ -61,7 +48,6 @@ def summarize_text():
 
 
 # PDF -> IMAGE
-AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 CONTAINER_NAME = os.getenv('CONTAINER_NAME')
 STORAGE_URL = os.getenv('STORAGE_URL')
 
@@ -94,10 +80,6 @@ def pdf_to_image():
 
     else:
         return jsonify({"error": "Invalid file format. Please upload a PDF file"}), 400
-
-# IMAGE -> TEXT
-CV_ENDPOINT = os.getenv('ENDPOINT')
-CV_KEY = os.getenv('API_KEY')
 
 @app.route('/image-to-text', methods=['POST'])
 def extract_text_from_image():

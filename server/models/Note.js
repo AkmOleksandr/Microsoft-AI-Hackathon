@@ -1,4 +1,4 @@
-const { getContainer } = require('../config/dbConfig');
+const { getNoteContainer } = require('../config/dbConfig');
 
 class User {
 	constructor(title, url, summary) {
@@ -8,7 +8,7 @@ class User {
   	}
 
   	async save() {
-    	await getContainer().items.create(this);
+    	await getNoteContainer().items.create(this);
   	}
 
   	static async findByTitle(title) {

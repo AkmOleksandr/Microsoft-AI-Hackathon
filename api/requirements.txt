@@ -1,0 +1,7 @@
+azure_storage==0.37.0
+fitz==0.0.1.dev2
+Flask==2.2.3
+msrest==0.7.1
+Pillow==10.1.0
+python-dotenv==1.0.0
+transformers==4.35.2

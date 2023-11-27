@@ -1,6 +1,9 @@
 import time
 import uuid
 import fitz
+import os
+from PIL import Image
+import io
 from dotenv import load_dotenv
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.textanalytics import TextAnalyticsClient
@@ -8,6 +11,7 @@ from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 from azure.storage.blob import BlobServiceClient, ContentSettings
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 load_dotenv()
 
@@ -15,9 +19,11 @@ LANG_KEY = os.getenv('LANGUAGE_KEY')
 LANG_ENDPOINT = os.getenv('LANGUAGE_ENDPOINT')
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 STORAGE_URL = os.getenv('STORAGE_URL')
-# IMAGE -> TEXT
 CV_ENDPOINT = os.getenv('ENDPOINT')
 CV_KEY = os.getenv('API_KEY')
+
+tokenizer = AutoTokenizer.from_pretrained("czearing/article-title-generator")
+model = AutoModelForSeq2SeqLM.from_pretrained("czearing/article-title-generator")
 
 def authenticate_client():
     ta_credential = AzureKeyCredential(LANG_KEY)
@@ -44,43 +50,59 @@ def _pdf_to_images(pdf_path, output_folder):
         # Save the image locally
         image_path = f"{output_folder}/page_{page_number + 1}.png"
         image.save(image_path)
-        images.append(image_path)
+        image = Image.open(image_path)
+        images.append(image)
 
     return images
 
+def concatenate_images(images):
+    # Find the maximum width and total height
+    max_width = max(image.width for image in images)
+    total_height = sum(image.height for image in images)
+
+    # Create a blank image with the maximum width and total height
+    concatenated_image = Image.new('RGBA', (max_width, total_height))
+
+    # Paste each image onto the blank image
+    current_height = 0
+    for image in images:
+        # Resize or crop the image to the maximum width before pasting
+        resized_image = image.resize((max_width, image.height))
+        concatenated_image.paste(resized_image, (0, current_height))
+        current_height += resized_image.height
+
+    return concatenated_image
 
 def upload_images_to_blob(images, container_name):
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
     container_client = blob_service_client.get_container_client(container_name)
+    
+    # Concatenate images into a single image
+    concatenated_image = concatenate_images(images)
+    
+    # Save the concatenated image to a BytesIO buffer
+    concatenated_image_buffer = io.BytesIO()
+    concatenated_image.save(concatenated_image_buffer, format='PNG')
+    concatenated_image_buffer.seek(0)
 
-    image_urls = []
+    # Upload the concatenated image to Azure Blob Storage
+    unique_id = str(uuid.uuid4())
+    blob_name = f"{unique_id}_all_pages.png"
+    blob_client = container_client.get_blob_client(blob_name)
+    blob_client.upload_blob(concatenated_image_buffer.read(), content_settings=ContentSettings(content_type='image/png'))
 
-    for idx, image_path in enumerate(images):
-        with open(image_path, "rb") as image_file:
-            # Upload image to Azure Blob Storage
-            unique_id = str(uuid.uuid4())
-            blob_name = f"{unique_id}_page_{idx + 1}.png"
-            blob_client = container_client.get_blob_client(blob_name)
-            blob_client.upload_blob(image_file.read(), content_settings=ContentSettings(content_type='image/png'))
+    # Get the URL of the uploaded blob
+    concatenated_image_url = blob_client.url
 
-            # Get the URL of the uploaded blob
-            image_url = blob_client.url
-
-            # Ensure the URL is valid and can be accessed
-            if validate_blob_url(image_url):
-                image_urls.append(image_url)
-            else:
-                print(f"Error: Unable to access the URL for {blob_name}")
-
-    return image_urls
+    return concatenated_image_url
 
 def validate_blob_url(blob_url):
     # Check if the URL is a valid Azure Storage Blob URL
     return blob_url.startswith(STORAGE_URL) and blob_url.endswith('.png')
 
 def _text_from_img(image_url):
+    print(image_url)
     cv_client = ComputerVisionClient(CV_ENDPOINT, CognitiveServicesCredentials(CV_KEY))
-
     response = cv_client.read(url=image_url, language='en', raw=True)
     operation_location = response.headers['Operation-Location']
     operation_id = operation_location.split('/')[-1]

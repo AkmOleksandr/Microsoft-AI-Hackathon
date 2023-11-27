@@ -1,4 +1,4 @@
-const { getContainer } = require('../config/dbConfig');
+const { getUserContainer } = require('../config/dbConfig');
 
 class User {
 	constructor(username, passwordHash) {
@@ -7,7 +7,7 @@ class User {
   	}
 
   	async save() {
-    	await getContainer().items.create(this);
+    	await getUserContainer().items.create(this);
   	}
 
   	static async findByUsername(username) {

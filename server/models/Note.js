@@ -1,6 +1,6 @@
 const { getNoteContainer } = require('../config/dbConfig');
 
-class User {
+class Note {
 	constructor(title, url, summary) {
 		this.title = title;
     	this.url = url;
@@ -22,4 +22,4 @@ class User {
   	}
 }
 
-module.exports = User;
+module.exports = Note;

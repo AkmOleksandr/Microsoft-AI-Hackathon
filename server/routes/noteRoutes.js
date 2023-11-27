@@ -8,6 +8,6 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.post('/upload', upload.single('file'), noteController.upload_pdf_note);
-// router.get('/notes/:title', noteController.get_note);
+router.get('/:title', noteController.get_note);
 
 module.exports = router;

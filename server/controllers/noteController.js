@@ -34,18 +34,27 @@ async function upload_pdf_note(req, res) {
         const newNote = new Note(summary_res.data.title, response.data.image_urls, summary_res.data.summary);
         await newNote.save();
         
-        res.json({ message: 'New note created' });
+        res.json({ message: 'New note created' }).status(200);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-// async function get_note(req, res) {
+async function get_note(req, res) {
+    try {
+        const title = req.params.title;
+        
+        const note = await Note.findByTitle(title);
 
-// }
+        res.status(200).json({ title: note.title, url: note.url, summary: note.summary})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 
 module.exports = {
     upload_pdf_note,
-    // get_note,
+    get_note,
 };

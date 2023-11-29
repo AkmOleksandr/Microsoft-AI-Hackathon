@@ -124,3 +124,34 @@ def _text_from_img(image_url):
         print(f"Unexpected operation status: {result.status}")
 
     return res
+
+def parse_questions(text):
+    # Split the text into individual questions
+    questions_raw = text.split('\n\n')
+
+    # Initialize a list to store parsed questions
+    parsed_questions = []
+
+    for question_raw in questions_raw:
+        # Split each question into lines
+        lines = question_raw.strip().split('\n')
+
+        # Extract question and options
+        question = lines[0].strip().split('. ')[1]
+
+        # Extract options and correct answer
+        options = [line.strip()[3:] for line in lines[1:] if line.strip()]  # Ignore empty lines
+        correct_answer = next((option.split(' - ')[0].strip() for option in options if 'Correct' in option), None)
+
+        # Create a dictionary for the parsed question
+        parsed_question = {
+            'question': question,
+            'options': options,
+            'correct_answer': correct_answer
+        }
+
+        # Append the parsed question to the list
+        parsed_questions.append(parsed_question)
+
+    return parsed_questions
+

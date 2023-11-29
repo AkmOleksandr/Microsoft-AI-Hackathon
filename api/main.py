@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from azure.ai.textanalytics import ExtractiveSummaryAction
-from helpers import _pdf_to_images, _text_from_img
+from helpers import _pdf_to_images, _text_from_img, parse_questions
 from helpers import *
-# import openai
+import openai
 
 app = Flask(__name__)
 
@@ -92,37 +92,59 @@ def extract_text_from_image():
     return jsonify({'extracted_text': extracted_text})
 
 # EXAM GENERATION
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-# openai.api_key = OPENAI_API_KEY
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+openai.api_key = OPENAI_API_KEY
+print(OPENAI_API_KEY)
 
-# @app.route('/generate-new-exam', methods=['POST'])
-# def generate_new_exam():
-#     # Get past_exam and topics from the request data
-#     data = request.get_json()
+@app.route('/generate-new-exam', methods=['POST'])
+def generate_new_exam():
+    # Get past_exam and topics from the request data
+    data = request.get_json()
 
-#     past_exam = data.get('past_exam')
-#     topics = data.get('topics')
-#     summaries = data.get('summaries')
+    # past_exam = data.get('past_exam')
+    topics = data.get('topics')
+    summaries = data.get('summaries')
 
-#     # Check if past_exam and topics are provided
-#     if not past_exam or not topics:
-#         return jsonify({"error": "Please provide both 'past_exam' and 'topics'"}), 400
+    # Check if past_exam and topics are provided
+    if not topics:
+        return jsonify({"error": "Please provide both 'past_exam' and 'topics'"}), 400
+    
+    template = """
+You are studying the topic: {topics}
 
-#     # Call OpenAI API to generate new exam
-#     try:
-#         res = openai.Completion.create(
-#             model="gpt-3.5-turbo-instruct",
-#             prompt=f"Generate a set of questions following this structure: {past_exam} cover these topics: {topics} given the following information {summaries}, assign weight to each question s.t. the total weight is 100 points",
-#             max_tokens=500,
-#             temperature=0
-#         )
+Below are your notes and summaries on key points related to this topic. Use this information to generate 5 multiple-choice questions.
 
-#         # Extract and return the generated questions
-#         generated_questions = res['choices'][0]['text']
-#         return jsonify({"generated_questions": generated_questions})
+---
 
-#     except Exception as e:
-#         return jsonify({"error": f"Error calling OpenAI API: {str(e)}"}), 500
+{{
+    "title": {topics},
+    "summary": {summaries},
+    "content": "1. [Generated Question 1]\\n   a. [Option 1]\\n   b. [Option 2]\\n   c. [Option 3]\\n   d. [Option 4 - Correct]\\n\\n2. [Generated Question 2]\\n   a. [Option 1]\\n   b. [Option 2 - Correct]\\n   c. [Option 3]\\n   d. [Option 4]\\n\\n3. [Generated Question 3]\\n   a. [Option 1 - Correct]\\n   b. [Option 2]\\n   c. [Option 3]\\n   d. [Option 4]\\n\\n4. [Generated Question 4]\\n   a. [Option 1]\\n   b. [Option 2]\\n   c. [Option 3]\\n   d. [Option 4 - Correct]\\n\\n5. [Generated Question 5]\\n   a. [Option 1]\\n   b. [Option 2]\\n   c. [Option 3 - Correct]\\n   d. [Option 4]"
+}}
+"""
+    formatted_template = template.format(topics=topics, summaries=summaries)
+    # Call OpenAI API to generate new exam
+    try:
+        response = openai.Completion.create(
+                    model="gpt-3.5-turbo-instruct",
+                    prompt=formatted_template,
+                    temperature=0,
+                    max_tokens=450,
+                    top_p=1,
+                    frequency_penalty=0,
+                    presence_penalty=0
+        )
+
+        # Extract and return the generated questions
+        text = response['choices'][0]['text']
+        questions = parse_questions(text)
+        print(questions)
+
+        # print(generated_questions)
+        return jsonify({"generated_questions": questions})
+
+    except Exception as e:
+        return jsonify({"error": f"Error calling OpenAI API: {str(e)}"}), 500
     
 # # ASSESS AN EXAM
 # @app.route('/exam-assessment', methods=['POST'])

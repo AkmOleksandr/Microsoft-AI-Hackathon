@@ -47,7 +47,7 @@ async function get_note(req, res) {
         
         const note = await Note.findByTitle(title);
 
-        res.status(200).json({ title: note.title, url: note.url, summary: note.summary})
+        res.status(200).json({ title: note.title, url: note.url, summary: note.summary});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

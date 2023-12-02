@@ -54,7 +54,19 @@ async function get_note(req, res) {
     }
 }
 
+async function get_all_notes(req, res) {
+    try {
+        const notes = await Note.findAll();
+
+        res.status(200).json({ notes: notes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 module.exports = {
     upload_pdf_note,
     get_note,
+    get_all_notes
 };

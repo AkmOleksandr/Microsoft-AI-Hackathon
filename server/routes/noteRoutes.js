@@ -9,5 +9,6 @@ const upload = multer({ storage: storage });
 
 router.post('/upload', upload.single('file'), noteController.upload_pdf_note);
 router.get('/:title', noteController.get_note);
+router.get('/', noteController.get_all_notes);
 
 module.exports = router;

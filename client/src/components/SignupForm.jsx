@@ -18,7 +18,7 @@ const SignupForm = () => {
                 },
                 body: JSON.stringify({"username": username, "password": password})
             });
-            console.log(response)
+            console.log(response.username)
         } catch (error) {
             console.error('Fetch error:', error);
         }

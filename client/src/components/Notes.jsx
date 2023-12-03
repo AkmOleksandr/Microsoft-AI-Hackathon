@@ -1,11 +1,16 @@
 
 import { useEffect, useState } from "react"
 import Note from "./Note";
+import { Container, Paper, CircularProgress } from "@mui/material";
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const Notes = () => {
 
     const [notes, setNotes] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
 
     const baseURL = 'http://localhost:3000'
@@ -50,35 +55,75 @@ const Notes = () => {
         try {
             const formData = new FormData();
             formData.append("file", selectedFile);
-    
+            setUploading(true);
             const response = await fetch(`${baseURL}/note/upload`, {
                 method: "POST",
                 body: formData,
             });
     
             if (response.ok) {
-                const result = await response.json();
-                console.log(result);
+                await response.json();
+                setUploading(false);
+                setSelectedFile(null);
             } else {
                 console.error("Failed to upload file. Status:", response.status);
             }
         } catch (error) {
             console.error("Error uploading file:", error);
         }
-      };
+    };
 
     return (
-        <div>
-        <h2>File Upload</h2>
-        <form onSubmit={uploadFile}>
-            <label>
-            Choose a file:
-            <input type="file" onChange={handleFileChange} />
-            </label>
-            <br />
-            <button type="submit">Upload</button>
-        </form>
-        </div>
+        <Container maxWidth="sm">
+            <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+                <Typography variant="h5" gutterBottom>
+                    Upload Form
+                </Typography>
+                <input
+                    type="file"
+                    accept="pdf/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    id="upload-input"
+                />
+                <label htmlFor="upload-input">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component="span"
+                    startIcon={<CloudUploadIcon />}
+                    disabled={uploading}
+                    onClick={handleFileChange}
+                >
+                    Upload
+                </Button>
+                </label>
+                {uploading && <CircularProgress style={{ marginLeft: '10px' }} size={20} />}
+                <Typography variant="body2" style={{ marginTop: '10px' }}>
+                    {selectedFile && `Selected File: ${selectedFile.name}`}
+                </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={uploadFile}
+                    style={{ marginTop: '10px' }}
+                    disabled={!selectedFile || uploading}
+                >
+                    Submit
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                        setSelectedFile(null);
+                        setUploading(false);
+                    }}
+                    style={{ marginTop: '10px', marginLeft: '10px' }}
+                >
+                    Clear
+                </Button>
+            </Paper>
+        </Container>
     )
 }
 

@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 
-const LoginForm = ( { handleLogin }) => {
+const Login = ( { handleLogin }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -37,7 +37,7 @@ const LoginForm = ( { handleLogin }) => {
                     Welcome to AI Tutor!
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField 
+                    <TextField
                         margin="normal"
                         required
                         fullWidth
@@ -79,4 +79,4 @@ const LoginForm = ( { handleLogin }) => {
     )
 }
 
-export default LoginForm
+export default Login

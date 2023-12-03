@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 
 
-const SignupForm = () => {
+const Signup = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -97,4 +97,4 @@ const SignupForm = () => {
     )
 }
 
-export default SignupForm
+export default Signup

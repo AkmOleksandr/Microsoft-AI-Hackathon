@@ -2,11 +2,14 @@ from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from azure.ai.textanalytics import ExtractiveSummaryAction
+from flask_cors import CORS, cross_origin
 from helpers import _pdf_to_images, _text_from_img, parse_questions
 from helpers import *
 import openai
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 load_dotenv()
 
@@ -101,9 +104,8 @@ def generate_new_exam():
     # Get past_exam and topics from the request data
     data = request.get_json()
 
-    # past_exam = data.get('past_exam')
-    topics = data.get('topics')
-    summaries = data.get('summaries')
+    topics = data.get('title')
+    summaries = data.get('summary')
 
     # Check if past_exam and topics are provided
     if not topics:

@@ -1,9 +1,13 @@
 import { useState } from "react";
 import Homepage from "./components/Homepage";
-import AuthPage from "./components/AuthPage"; // Import the new component
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+
 
 function App() {
 	const [user, setUser] = useState(null);
+	const navigate = useNavigate();
 
 	const baseURL = 'http://localhost:3000/auth'
 
@@ -19,9 +23,11 @@ function App() {
 				body: JSON.stringify({ "username": username, "password": password })
 			});
 			if (response.ok) {
-				const data = await response.json()
-				const { username } = data
+				const data = await response.json();
+				const { username } = data;
+				console.log("SUCCESS ", username);
 				setUser(username);
+				navigate('/')
 			}
 		} catch (error) {
 			console.error('Fetch error:', error);
@@ -33,7 +39,11 @@ function App() {
 	}
 
 	return (
-		user ? <Homepage handleLogout={handleLogout} user={user} /> : <AuthPage handleLogin={handleLogin} />
+		<Routes>
+			<Route path="*" element={user ? <Homepage handleLogout={handleLogout} user={user} /> : <Navigate to="/login" replace />} />
+			<Route path="/login" element={<Login handleLogin={handleLogin}/>} />
+			<Route path="/signup" element={<Signup />} />
+		</Routes>
 	);
 }
 

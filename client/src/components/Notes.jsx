@@ -1,40 +1,19 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Note from "./Note";
 import { Container, Paper, CircularProgress, Grid } from "@mui/material";
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-const Notes = () => {
+const Notes = ({ fetchData, notes }) => {
 
-    const [notes, setNotes] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
     const baseURL = 'http://localhost:3000'
-
-    const fetchData = async () => {
-        try {
-            const response = await fetch(`${baseURL}/note/`);
-            if (response.ok) {
-                const data = await response.json()
-                setNotes(data.notes)
-            } else {
-                console.log("Failed to fetch notes");
-            }
-        } catch (error) {
-            console.log("Error fetching data", error);
-        }
-        console.log("yes")
-    }
-
-    useEffect (() => {
-        fetchData()
-        console.log("refresh")
-    }, []);
     
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        setSelectedFile(event.target.files && event.target.files[0]);
     };
 
     const uploadFile = async (event) => {

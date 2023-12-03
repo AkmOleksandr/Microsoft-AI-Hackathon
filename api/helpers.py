@@ -101,7 +101,6 @@ def validate_blob_url(blob_url):
     return blob_url.startswith(STORAGE_URL) and blob_url.endswith('.png')
 
 def _text_from_img(image_url):
-    print(image_url)
     cv_client = ComputerVisionClient(CV_ENDPOINT, CognitiveServicesCredentials(CV_KEY))
     response = cv_client.read(url=image_url, language='en', raw=True)
     operation_location = response.headers['Operation-Location']
@@ -141,12 +140,13 @@ def parse_questions(text):
 
         # Extract options and correct answer
         options = [line.strip()[3:] for line in lines[1:] if line.strip()]  # Ignore empty lines
+        actual_options = [option.split(' - ')[0].strip() for option in options]
         correct_answer = next((option.split(' - ')[0].strip() for option in options if 'Correct' in option), None)
 
         # Create a dictionary for the parsed question
         parsed_question = {
             'question': question,
-            'options': options,
+            'options': actual_options,
             'correct_answer': correct_answer
         }
 

@@ -97,7 +97,6 @@ def extract_text_from_image():
 # EXAM GENERATION
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
-print(OPENAI_API_KEY)
 
 @app.route('/generate-new-exam', methods=['POST'])
 def generate_new_exam():
@@ -123,8 +122,10 @@ Below are your notes and summaries on key points related to this topic. Use this
     "summary": {summaries},
     "content": "1. [Generated Question 1]\\n   a. [Option 1]\\n   b. [Option 2]\\n   c. [Option 3]\\n   d. [Option 4 - Correct]\\n\\n2. [Generated Question 2]\\n   a. [Option 1]\\n   b. [Option 2 - Correct]\\n   c. [Option 3]\\n   d. [Option 4]\\n\\n3. [Generated Question 3]\\n   a. [Option 1 - Correct]\\n   b. [Option 2]\\n   c. [Option 3]\\n   d. [Option 4]\\n\\n4. [Generated Question 4]\\n   a. [Option 1]\\n   b. [Option 2]\\n   c. [Option 3]\\n   d. [Option 4 - Correct]\\n\\n5. [Generated Question 5]\\n   a. [Option 1]\\n   b. [Option 2]\\n   c. [Option 3 - Correct]\\n   d. [Option 4]"
 }}
+
 """
     formatted_template = template.format(topics=topics, summaries=summaries)
+
     # Call OpenAI API to generate new exam
     try:
         response = openai.Completion.create(
@@ -140,9 +141,7 @@ Below are your notes and summaries on key points related to this topic. Use this
         # Extract and return the generated questions
         text = response['choices'][0]['text']
         questions = parse_questions(text)
-        print(questions)
 
-        # print(generated_questions)
         return jsonify({"generated_questions": questions})
 
     except Exception as e:

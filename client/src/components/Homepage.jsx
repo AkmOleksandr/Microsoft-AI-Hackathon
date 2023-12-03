@@ -14,6 +14,7 @@ const Homepage = ({ handleLogout, user }) => {
             const response = await fetch(`${baseURL}/note/`);
             if (response.ok) {
                 const data = await response.json()
+                console.log(data.notes);
                 setNotes(data.notes)
 
                 localStorage.setItem('cachedNotes', JSON.stringify(data.notes))
@@ -29,8 +30,10 @@ const Homepage = ({ handleLogout, user }) => {
     useEffect (() => {
         const cachedNotes = localStorage.getItem('cachedNotes');
         if (cachedNotes) {
+            console.log("already there")
             setNotes(JSON.parse(cachedNotes));
         } else {
+            console.log("fetching")
             fetchData();
         }
         console.log("refresh")
@@ -41,7 +44,7 @@ const Homepage = ({ handleLogout, user }) => {
             <Routes>
                 <Route index element={<Notes fetchData={fetchData} notes={notes} />} />
                 <Route path="notes" element={<Notes fetchData={fetchData} notes={notes} />} />
-                <Route path="quizzes" element={<Quiz />} />
+                <Route path="quizzes" element={<Quiz notes={notes}/>} />
             </Routes>            
         </Layout>
     )

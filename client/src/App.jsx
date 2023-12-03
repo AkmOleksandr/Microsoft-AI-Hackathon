@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Homepage from "./components/Homepage";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./components/Login";
@@ -11,9 +11,16 @@ function App() {
 
 	const baseURL = 'http://localhost:3000/auth'
 
+	useEffect(() => {
+		const cachedUser = localStorage.getItem("user");
+		if (cachedUser) {
+			setUser(cachedUser);
+			navigate('/');
+		}
+	}, []);
+
 	const handleLogin = async ({ username, password }) => {
 		const apiUrl = `${baseURL}/login`;
-
 		try {
 			const response = await fetch(apiUrl, {
 				method: 'POST',
@@ -26,8 +33,9 @@ function App() {
 				const data = await response.json();
 				const { username } = data;
 				console.log("SUCCESS ", username);
+				localStorage.setItem("user", username);
 				setUser(username);
-				navigate('/')
+				navigate('/');
 			}
 		} catch (error) {
 			console.error('Fetch error:', error);

@@ -42,7 +42,7 @@ const Homepage = ({ handleLogout, user }) => {
     return (
         <Layout handleLogout={handleLogout} user={user}>
             <Routes>
-                <Route index element={<Notes fetchData={fetchData} notes={notes} />} />
+                <Route index element={<Quiz notes={notes}/>} />
                 <Route path="notes" element={<Notes fetchData={fetchData} notes={notes} />} />
                 <Route path="quizzes" element={<Quiz notes={notes}/>} />
             </Routes>            

@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { Paper, Typography, Button, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import ProgressBar from './ProgressBar'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const QuizTaker = ({ questions, currentIndex, onNavigateNext, setScore }) => {
     const [selectedOption, setSelectedOption] = useState(null);
@@ -33,47 +37,60 @@ const QuizTaker = ({ questions, currentIndex, onNavigateNext, setScore }) => {
     };
 
     return (
-        <div>
-            {currentQuestion ? (
-                <>
-                    <h3>{currentQuestion.question}</h3>
-                    <ul>
-                        {currentQuestion.options.map((option, index) => (
-                            <div key={index}>
-                                <input
-                                    type="radio"
-                                    id={`option-${index}`}
-                                    name="options"
-                                    value={option}
-                                    checked={selectedOption === option}
-                                    onChange={() => handleOptionSelect(option)}
-                                />
-                                <label htmlFor={`option-${index}`}>{option}</label>
+        <Paper sx={{ maxWidth: 800, margin: 'auto', padding: 3, textAlign: 'center', marginTop: '40px', boxShadow: 4, borderRadius: '20px' }}>
+            <ProgressBar activeStep={currentIndex} />
+
+            <div>
+                <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
+                    {currentQuestion.question}
+                </Typography>
+
+                <RadioGroup
+                    value={selectedOption}
+                    onChange={(event) => handleOptionSelect(event.target.value)}
+                    name="options"
+                >
+                    {currentQuestion.options.map((option, optionIndex) => (
+                        <FormControlLabel
+                            key={optionIndex}
+                            value={option}
+                            control={<Radio />}
+                            label={option}
+                            disabled={submitted}
+                            sx={{ marginLeft: '45px' }}
+                        />
+                    ))}
+                </RadioGroup>
+
+                <Button onClick={handleSubmit} disabled={submitted}>
+                    Submit
+                </Button>
+
+                <Button onClick={handleNext} disabled={!submitted || currentIndex === questions.length - 1}>
+                    Next
+                </Button>
+
+                {submitted && (
+                    <div style={{ marginTop: '20px' }}>
+                        {selectedOption === currentQuestion.correct_answer ? (
+                            <div style={{ color: 'green', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <CheckCircleOutlineIcon sx={{ fontSize: 40, marginRight: '10px' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                    Correct!
+                                </Typography>
                             </div>
-                        ))}
-                    </ul>
-                    <button onClick={handleSubmit} disabled={submitted}>
-                        Submit
-                    </button>
-                    <button onClick={handleNext} disabled={!submitted}>
-                        Next
-                    </button>
-                    {submitted && (
-                        <div>
-                            {selectedOption === currentQuestion.correct_answer ? (
-                                <p>Correct!</p>
-                            ) : (
-                                <p>
+                        ) : (
+                            <div style={{ color: 'red', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <CancelIcon sx={{ fontSize: 40, marginRight: '10px' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                                     Incorrect. The correct answer is: {currentQuestion.correct_answer}
-                                </p>
-                            )}
-                        </div>
-                    )}
-                </>
-            ) : (
-                <p>Loading...</p>
-            )}
-        </div>
+                                </Typography>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </Paper>
     );
 };
 

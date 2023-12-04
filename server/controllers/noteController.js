@@ -3,19 +3,20 @@ const axios = require('axios');
 const FormData = require('form-data');
 require('dotenv').config();
 
-async function upload_pdf_note(req, res) {
+async function upload_note(req, res) {
     try {
         const file = req.file;
 
         const formData = new FormData();
         formData.append('file', file.buffer, { filename: file.originalname });
 
-        const response = await axios.post('http://127.0.0.1:5000/pdf-to-image', formData, {
+        const response = await axios.post('http://127.0.0.1:5000/process-file', formData, {
             headers: {
                 ...formData.getHeaders(),
             },
         });
-        const img_url_data = { "image_url": response.data.image_urls };
+
+        const img_url_data = { "image_url": response.data.image_url };
 
         const text_res = await axios.post('http://127.0.0.1:5000/image-to-text', img_url_data, {
             headers: {
@@ -31,7 +32,7 @@ async function upload_pdf_note(req, res) {
             },
         });
 
-        const newNote = new Note(summary_res.data.title, response.data.image_urls, summary_res.data.summary);
+        const newNote = new Note(summary_res.data.title, response.data.image_url, summary_res.data.summary);
         await newNote.save();
         
         res.json({ message: 'New note created' }).status(200);
@@ -66,7 +67,7 @@ async function get_all_notes(req, res) {
 }
 
 module.exports = {
-    upload_pdf_note,
+    upload_note,
     get_note,
     get_all_notes
 };

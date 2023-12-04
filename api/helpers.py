@@ -52,7 +52,7 @@ def _pdf_to_images(pdf_path, output_folder):
         image.save(image_path)
         image = Image.open(image_path)
         images.append(image)
-
+    
     return images
 
 def concatenate_images(images):

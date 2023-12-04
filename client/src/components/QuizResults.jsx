@@ -1,7 +1,8 @@
-const QuizResults = () => {
+const QuizResults = ({ score, handleGenerateAnotherQuiz }) => {
     return (
         <div>
-            Quiz Results
+            <p>Your Score: {score}</p>
+            <button onClick={handleGenerateAnotherQuiz}>Generate Another Quiz</button>
         </div>
     )
 }

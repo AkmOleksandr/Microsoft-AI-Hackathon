@@ -1,78 +1,37 @@
 import { useState } from "react"
 import TopicSelector from "./TopicSelector";
 import QuizTaker from "./QuizTaker";
+import QuizResults from "./QuizResults";
 
 const Quiz = ({ notes }) => {
 
     const [questions, setQuestions] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [score, setScore] = useState(0);
+
+    const handleNext = () => {
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+    };
+
+    const handleGenerateAnotherQuiz = () => {
+        setQuestions(null);
+        setCurrentIndex(0);
+        setScore(0);
+    };
 
     const generateQuiz = async (noteData) => {
-        console.log(noteData);
         try {
-            // const response = await fetch("http://127.0.0.1:5000/generate-new-exam", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify(noteData)
-            // });
-            // if (response.ok) {
-            //     const data = await response.json();
-            //     console.log(data);
-            //     setQuestions(data.generated_questions)
-            // }
-            setQuestions([
-                {
-                    "correct_answer": "As the way of life practiced by a group",
-                    "options": [
-                        "As a set of beliefs and values",
-                        "As a geographical location",
-                        "As a political system",
-                        "As the way of life practiced by a group - Correct"
-                    ],
-                    "question": "According to the notes, what is the simplest way to understand culture?"
+            const response = await fetch("http://127.0.0.1:5000/generate-new-exam", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                {
-                    "correct_answer": "The impact of globalization on culture",
-                    "options": [
-                        "The importance of education",
-                        "The value of children in society",
-                        "The role of technology in modern culture",
-                        "The impact of globalization on culture - Correct"
-                    ],
-                    "question": "What is the main focus of Second Thoughts Essay 3?"
-                },
-                {
-                    "correct_answer": "Prepare for a make-up quiz",
-                    "options": [
-                        "Read Essay 7 of Second Thoughts",
-                        "Take a quiz on Essay 3",
-                        "Read Essay 3 of Second Thoughts",
-                        "Prepare for a make-up quiz - Correct"
-                    ],
-                    "question": "What is the recommended homework for the next class?"
-                },
-                {
-                    "correct_answer": "Online",
-                    "options": [
-                        "Lecture-based",
-                        "Discussion-based",
-                        "Hands-on",
-                        "Online - Correct"
-                    ],
-                    "question": "What type of class is described in the notes?"
-                },
-                {
-                    "correct_answer": "The impact of culture on society",
-                    "options": [
-                        "The importance of staying on topic",
-                        "The value of group work",
-                        "The conversational nature of the class",
-                        "The impact of culture on society - Correct"
-                    ],
-                    "question": "What is the main takeaway from the discussions in class?"
-                }
-            ])
+                body: JSON.stringify(noteData)
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setQuestions(data.generated_questions)
+            }
         } catch (error) {
             console.log("Error generating quiz ", error);
         }
@@ -80,10 +39,17 @@ const Quiz = ({ notes }) => {
 
     return  (
         <div>
-            {!questions ? (
+            {questions === null ? (
                 <TopicSelector notes={notes} generateQuiz={generateQuiz} />
+            ) : currentIndex >= questions.length ? (
+                <QuizResults score={score} handleGenerateAnotherQuiz={handleGenerateAnotherQuiz} />
             ) : (
-                <QuizTaker questions={questions} />
+                <QuizTaker
+                    questions={questions}
+                    currentIndex={currentIndex}
+                    onNavigateNext={handleNext}
+                    setScore={setScore}
+                />
             )}
         </div>
     )

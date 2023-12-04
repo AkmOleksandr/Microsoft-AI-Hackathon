@@ -4,12 +4,16 @@ import {
 	Card,
 	CardContent,
 	Modal,
+	Button,
+	useTheme
 } from "@mui/material";
+import ImageSearchIcon from '@mui/icons-material/ImageSearch';
 import { useState } from "react";
 
 
 const Note = ({ title, url, summary }) => {
 	const [open, setOpen] = useState(false);
+	const theme = useTheme();
 
 	const handleOpen = () => {
 		setOpen(true);
@@ -33,8 +37,6 @@ const Note = ({ title, url, summary }) => {
 				</CardContent>
 			</Card>
 			<Modal
-				aria-labelledby="transition-modal-title"
-				aria-describedby="transition-modal-description"
 				open={open}
 				onClose={handleClose}
 				sx={{
@@ -47,9 +49,20 @@ const Note = ({ title, url, summary }) => {
 					<Typography variant="h6" gutterBottom>
 						{title}
 					</Typography>
-					<a href={url} target="_blank" rel="noopener noreferrer">
+					<Button
+						href={url}
+						target="_blank"
+						rel="noopener noreferrer"
+						startIcon={<ImageSearchIcon />}
+						variant="text"
+						style={{ 
+								backgroundColor: theme.palette.secondary.main, 
+								color: 'white', 
+								marginBottom: "10px",
+								fontSize: 'small' }}
+					>
 						View Image
-					</a>
+					</Button>
 					<Typography variant="body2" color="text.secondary">
 						{summary}
 					</Typography>

@@ -34,7 +34,6 @@ const Navbar = ({ handleLogout, user }) => {
                         variant="h6"
                         noWrap
                         component="a"
-                        href="#app-bar-with-responsive-menu"
                         sx={{
                         mr: 2,
                         display: { xs: 'none', md: 'flex' },
@@ -45,7 +44,7 @@ const Navbar = ({ handleLogout, user }) => {
                         textDecoration: 'none',
                         }}
                     >
-                        AI TUTOR
+                        LeetTutor
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -105,7 +104,7 @@ const Navbar = ({ handleLogout, user }) => {
                         textDecoration: 'none',
                         }}
                     >
-                        AI TUTOR
+                        LeetTutor
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (

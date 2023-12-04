@@ -49,7 +49,7 @@ const Notes = ({ fetchData, notes }) => {
                 justifyContent: "space-between",
             }} maxWidth="md">
                 <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
-                    <Typography variant="h5" gutterBottom>
+                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
                         Upload Form
                     </Typography>
                     <input
@@ -102,9 +102,7 @@ const Notes = ({ fetchData, notes }) => {
                     ))}
                 </Grid>
             </Container>
-            
         </div>
-        
     )
 }
 

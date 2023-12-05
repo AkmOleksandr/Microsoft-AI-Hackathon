@@ -8,14 +8,13 @@ const CustomProgressBar = styled(LinearProgress)({
     margin: 'auto'
   });
 
-//   export default ProgressBar
 export default function ProgressBar({ activeStep }) {
     const theme = useTheme();
   
     return (
       <CustomProgressBar
         variant="determinate"
-        value={(activeStep / 4) * 100} // Adjust the steps accordingly
+        value={(activeStep / 5) * 100}
         sx={{
           maxWidth: 400,
           flexGrow: 1,

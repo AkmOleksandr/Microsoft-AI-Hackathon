@@ -24,7 +24,6 @@ const Homepage = ({ handleLogout, user }) => {
         } catch (error) {
             console.log("Error fetching data", error);
         }
-        console.log("yes")
     }
 
     useEffect (() => {
@@ -42,7 +41,7 @@ const Homepage = ({ handleLogout, user }) => {
     return (
         <Layout handleLogout={handleLogout} user={user}>
             <Routes>
-                <Route index element={<Quiz notes={notes}/>} />
+                <Route index element={<Notes fetchData={fetchData} notes={notes} />} />
                 <Route path="notes" element={<Notes fetchData={fetchData} notes={notes} />} />
                 <Route path="quizzes" element={<Quiz notes={notes}/>} />
             </Routes>            

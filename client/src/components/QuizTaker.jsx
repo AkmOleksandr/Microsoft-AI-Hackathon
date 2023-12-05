@@ -17,13 +17,9 @@ const QuizTaker = ({ questions, currentIndex, onNavigateNext, setScore }) => {
     };
 
     const handleNext = () => {
-        if (submitted && currentIndex === questions.length - 1) {
-            onNavigateNext();
-        } else if (submitted) {
-            onNavigateNext();
-            setSelectedOption(null);
-            setSubmitted(false);
-        }
+        onNavigateNext();
+        setSelectedOption(null);
+        setSubmitted(false);
     };
 
     const handleSubmit = () => {
@@ -66,7 +62,7 @@ const QuizTaker = ({ questions, currentIndex, onNavigateNext, setScore }) => {
                     Submit
                 </Button>
 
-                <Button onClick={handleNext} disabled={!submitted || currentIndex === questions.length - 1}>
+                <Button onClick={handleNext} disabled={!submitted}>
                     Next
                 </Button>
 

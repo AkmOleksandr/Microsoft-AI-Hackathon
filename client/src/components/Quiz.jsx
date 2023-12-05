@@ -61,6 +61,7 @@ const Quiz = ({ notes }) => {
     const [score, setScore] = useState(0);
 
     const handleNext = () => {
+        console.log(currentIndex)
         setCurrentIndex((prevIndex) => prevIndex + 1);
     };
 
@@ -92,7 +93,7 @@ const Quiz = ({ notes }) => {
         <div>
             {questions === null ? (
                 <TopicSelector notes={notes} generateQuiz={generateQuiz} />
-            ) : currentIndex == questions.length - 1 ? (
+            ) : currentIndex == questions.length ? (
                 <QuizResults score={score} handleGenerateAnotherQuiz={handleGenerateAnotherQuiz} />
             ) : (
                 <QuizTaker

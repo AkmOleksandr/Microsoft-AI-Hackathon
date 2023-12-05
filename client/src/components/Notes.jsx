@@ -73,7 +73,7 @@ const Notes = ({ fetchData, notes }) => {
                     </label>
                     {uploading && <CircularProgress style={{ marginLeft: '10px' }} size={20} />}
                     <Typography variant="body2" style={{ marginTop: '10px' }}>
-                        {selectedFile && `Selected File: ${selectedFile.name}`}
+                        {selectedFile && `${selectedFile.name}`}
                     </Typography>
                     <Button
                         variant="contained"

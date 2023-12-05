@@ -63,6 +63,9 @@ const Note = ({ title, url, summary }) => {
 					>
 						View Image
 					</Button>
+					<Typography variant="h6" component="div">
+						Summary
+					</Typography>
 					<Typography variant="body2" color="text.secondary">
 						{summary}
 					</Typography>

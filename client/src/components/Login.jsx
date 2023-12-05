@@ -34,7 +34,7 @@ const Login = ( { handleLogin }) => {
                     <EditNoteIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Welcome to AI Tutor!
+                    Welcome to LeetTutor!
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField

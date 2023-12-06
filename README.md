@@ -16,12 +16,12 @@ python main.py
 ```
 cd server
 npm install
-npm run dev
+npm start
 ```
 
 ## Client
 ```
 cd client
 npm install
-npm run dev
+npm run preview
 ```
